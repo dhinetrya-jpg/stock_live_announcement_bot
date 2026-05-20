@@ -28,7 +28,13 @@ MAX_REGISTRY_SIZE = 10000  # Lines before cleanup
 # NSE Configuration - CORRECTED ENDPOINTS
 NSE_HOME_URL = "https://nseindia.com"
 NSE_API_URL = "https://www.nseindia.com/api/corporate-announcements"
+today_str = datetime.now().strftime('%d-%m-%Y')
 
+params = {
+    'index': 'equities',        # <-- CRITICAL: Prevents "missing index" error
+    'from_date': today_str,
+    'to_date': today_str
+}
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Accept-Language": "en-US,en;q=0.9",
@@ -220,7 +226,7 @@ def fetch_nse_announcements(session):
         logger.info("Fetching NSE announcements from API...")
         
         # FIXED: Correct NSE API endpoint that returns JSON
-        response = session.get(NSE_API_URL, headers=HEADERS, timeout=REQUEST_TIMEOUT)
+        response = session.get(NSE_API_URL, headers=HEADERS, params=params, timeout=REQUEST_TIMEOUT)
         
         if response.status_code != 200:
             logger.error(f"Failed to fetch announcements: HTTP {response.status_code}")
